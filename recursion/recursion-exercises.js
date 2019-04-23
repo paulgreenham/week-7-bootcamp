@@ -2,7 +2,7 @@
 
 // const factorial = function (number, currentFact = 1) {
 //     if (number === 0) {
-//         return number
+//         return 1
 //     }
 //     else if (number === 1) {
 //         return currentFact
