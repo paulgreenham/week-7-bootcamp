@@ -18,6 +18,7 @@ class Matrix {
     }
 
     print() {
+        console.log('\n')
         for (let r = 0; r < this.matrix.length; r ++) {
             let rowStr = ""
             for (let c = 0; c < this.matrix[r].length; c ++) {
@@ -184,6 +185,8 @@ class Matrix {
 class TicTacToe extends Matrix {
     constructor (matrix) {
         super(matrix)
+        this.previousPlayer
+        this.turns = 0
     }
 
     loadBoard() {
@@ -196,17 +199,6 @@ class TicTacToe extends Matrix {
             }
         }
         this.matrix = newMatrix
-    }
-
-    getPlayerMarker(player) {
-        return player == 1 ? "x" : "o"
-    }
-
-    checkIfEqual(array) {
-        if (array.some(a => a === ".")) {
-            return false
-        }
-        return array.every(a => a === array[0])
     }
 
     checkDiagonals() {
@@ -222,6 +214,13 @@ class TicTacToe extends Matrix {
         else {
             return false
         }
+    }
+
+    checkIfEqual(array) {
+        if (array.some(a => a === ".")) {
+            return false
+        }
+        return array.every(a => a === array[0])
     }
 
     checkForThree() {
@@ -241,10 +240,50 @@ class TicTacToe extends Matrix {
         return false
     }
 
+    checkPositionFree(rowNum, columnNum) {
+        return this.get(rowNum, columnNum) === "." ? true : false
+    }
+
+    invalidPlay(rowNum, columnNum, player) {
+        if (!this.checkPositionFree(rowNum, columnNum)) {
+            console.log("The position has already been played!")
+            return true
+        }
+        else if (this.previousPlayer === player) {
+            console.log(`Player ${player} has already had their turn.`)
+            return true
+        }
+        else {
+            return false
+        }
+    }
+
+    resetGame() {
+        this.turns = 0
+        this.previousPlayer = null
+        this.loadBoard()
+        this.print()
+    }
+
+    getPlayerMarker(player) {
+        return player == 1 ? "x" : "o"
+    }
+
     play(rowNum, columnNum, player) {
+        if (this.invalidPlay(rowNum, columnNum, player)) { return }
+
         this.alter(rowNum, columnNum, this.getPlayerMarker(player))
+        this.print()
+        this.turns ++
+        this.previousPlayer = player
+
         if (this.checkForThree()) {
             console.log(`Congratulations Player ${player}`)
+            this.resetGame()
+        }
+        else if (this.turns === 9) {
+            console.log("The game is a draw. Start over.")
+            this.resetGame()
         }
     }
 }
@@ -276,3 +315,43 @@ class TicTacToe extends Matrix {
 // board.play(1, 2, 1) //prints Congratulations Player 1
 
 // board.print()
+
+
+//Extension 1
+
+// let board = new TicTacToe()
+// board.loadBoard()
+
+// board.play(2, 2, 1)
+// board.play(0, 0, 0)
+// board.play(2, 2, 1)
+// board.play(1, 1, 1)
+// board.play(1, 1, 2)
+
+// board.print()
+
+
+//Extension 2
+
+let board = new TicTacToe()
+board.loadBoard()
+
+board.play(2, 2, 1)
+board.play(0, 0, 0)
+board.play(2, 2, 1)
+board.play(1, 1, 2)
+board.play(1, 0, 1)
+board.play(0, 1, 2)
+board.play(2, 0, 2)
+board.play(2, 0, 1)
+board.play(0, 2, 2)
+
+board.play(1, 0, 1)
+board.play(1, 2, 2)
+board.play(0, 2, 1)
+board.play(0, 0, 2)
+board.play(0, 1, 1)
+board.play(1, 1, 2)
+board.play(2, 1, 1)
+board.play(2, 0, 2)
+board.play(2, 2, 1)
