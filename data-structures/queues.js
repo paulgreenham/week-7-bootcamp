@@ -104,9 +104,9 @@
 //         return this.queues[qNum].dequeue()
 //     }
 
-//     getLongestQueue() {
-//         return this.queues[1].getQueueLength() > this.queues[2].getQueueLength() ? this.queues[1] : this.queues[2]
-//     }
+    // getLongestQueue() {
+    //     return this.queues[1].getQueueLength() > this.queues[2].getQueueLength() ? this.queues[1] : this.queues[2]
+    // }
 
 //     getShortestQueue() {
 //         return this.queues[1].getQueueLength() < this.queues[2].getQueueLength() ? this.queues[1] : this.queues[2]
@@ -195,12 +195,14 @@ class OrderedQueue {
 
 
 class MultiQueue {
-    constructor (n) {
+    constructor (numberOfQueues) {
         this.queues = {}
-        for (let i = 1; i <= n; i ++) {
+        for (let i = 1; i <= numberOfQueues; i ++) {
             this.queues[i] = new OrderedQueue(i)
         }
-        this.totalQueues = n
+        this.totalQueues = numberOfQueues
+        this.longestQueueNum = numberOfQueues
+        this.shortestQueueNum = numberOfQueues
     }
 
     enqueue(person, qNum) {
@@ -208,47 +210,61 @@ class MultiQueue {
             return null
         }
         this.queues[qNum].enqueue(person)
+        if (this.queues[qNum].getQueueLength() > this.queues[this.longestQueueNum].getQueueLength()) {
+            this.longestQueueNum = qNum
+        }
     }    
 
     dequeue(qNum) {
         if (this.totalQueues < qNum) {
             return null
         }
+        if (this.queues[qNum].getQueueLength() - 1 < this.queues[this.shortestQueueNum].getQueueLength()) {
+            this.shortestQueueNum = qNum
+        }
         return this.queues[qNum].dequeue()
     }
 
-    getLongerQueueNum(ord1, ord2) {
-        return this.queues[ord1].getQueueLength() > this.queues[ord2].getQueueLength() ? this.queues[ord1].getOrderNum() : this.queues[ord2].getOrderNum()
-    }
+    // getLongerQueueNum(ord1, ord2) {
+    //     return this.queues[ord1].getQueueLength() > this.queues[ord2].getQueueLength() ? this.queues[ord1].getOrderNum() : this.queues[ord2].getOrderNum()
+    // }
+
+    // getLongestQueue() {
+    //     if (this.totalQueues < 1) {
+    //         return null
+    //     }
+    //     else {
+    //         let longestOrdinal = this.queues[1].getOrderNum()
+    //         for (let i = 1; i <= this.totalQueues; i ++) {
+    //             longestOrdinal = this.getLongerQueueNum(i, longestOrdinal)
+    //         }
+    //         return this.queues[longestOrdinal]
+    //     }
+    // }
+
+    // getShorterQueueNum(ord1, ord2) {
+    //     return this.queues[ord1].getQueueLength() < this.queues[ord2].getQueueLength() ? this.queues[ord1].getOrderNum() : this.queues[ord2].getOrderNum()
+    // }
+
+    // getShortestQueue() {
+    //     if (this.totalQueues < 1) {
+    //         return null
+    //     }
+    //     else {
+    //         let shortestOrdinal = this.queues[1].getOrderNum()
+    //         for (let i = 1; i <= this.totalQueues; i ++) {
+    //             shortestOrdinal = this.getShorterQueueNum(i, shortestOrdinal)
+    //         }
+    //         return this.queues[shortestOrdinal]
+    //     }
+    // }
 
     getLongestQueue() {
-        if (this.totalQueues < 1) {
-            return null
-        }
-        else {
-            let longestOrdinal = this.queues[1].getOrderNum()
-            for (let i = 1; i <= this.totalQueues; i ++) {
-                longestOrdinal = this.getLongerQueueNum(i, longestOrdinal)
-            }
-            return this.queues[longestOrdinal]
-        }
-    }
-
-    getShorterQueueNum(ord1, ord2) {
-        return this.queues[ord1].getQueueLength() < this.queues[ord2].getQueueLength() ? this.queues[ord1].getOrderNum() : this.queues[ord2].getOrderNum()
+        return this.queues[this.longestQueueNum]
     }
 
     getShortestQueue() {
-        if (this.totalQueues < 1) {
-            return null
-        }
-        else {
-            let shortestOrdinal = this.queues[1].getOrderNum()
-            for (let i = 1; i <= this.totalQueues; i ++) {
-                shortestOrdinal = this.getShorterQueueNum(i, shortestOrdinal)
-            }
-            return this.queues[shortestOrdinal]
-        }
+        return this.queues[this.shortestQueueNum]
     }
 
     queuesUnbalanced(ord1, ord2) {
@@ -265,17 +281,17 @@ class MultiQueue {
         if (this.totalQueues < 1) {
             return null
         }
-        let longOrdinal = this.getLongestQueue().getOrderNum()
-        let shortOrdinal = this.getShortestQueue().getOrderNum()
-        while (this.queuesUnbalanced(longOrdinal, shortOrdinal)) {
-            this.balanceTwoQueues(longOrdinal, shortOrdinal)
-            longOrdinal = this.getLongestQueue().getOrderNum()
-            shortOrdinal = this.getShortestQueue().getOrderNum() 
+        // let longOrdinal = this.getLongestQueue().getOrderNum()
+        // let shortOrdinal = this.getShortestQueue().getOrderNum()
+        while (this.queuesUnbalanced(this.longestQueueNum, this.shortestQueueNum)) {
+            this.balanceTwoQueues(this.longestQueueNum, this.shortestQueueNum)
+            // longOrdinal = this.getLongestQueue().getOrderNum()
+            // shortOrdinal = this.getShortestQueue().getOrderNum() 
         }
     }
 }
 
-let mq = new MultiQueue(3)
+let mq = new MultiQueue(6)
 console.log(mq.queues) /*[  Queue { queue: [] },
                             Queue { queue: [] },
                             Queue { queue: [] },
@@ -285,8 +301,8 @@ console.log(mq.queues) /*[  Queue { queue: [] },
 mq.enqueue(1, 1)
 mq.enqueue(1, 1)
 mq.enqueue(1, 1)
-mq.enqueue(2, 2)
-mq.enqueue(2, 2)
+mq.enqueue(2, 6)
+mq.enqueue(2, 6)
 mq.dequeue(1)
 mq.dequeue(1)
 
